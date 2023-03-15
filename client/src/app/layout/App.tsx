@@ -1,6 +1,7 @@
 
 import { Container, createTheme, CssBaseline, ThemeProvider } from '@mui/material';
 import { useState } from 'react';
+import { Outlet } from 'react-router-dom';
 import Catalog from '../../features/catalog/Catalog';
 import Header from './Header';
 function App() {
@@ -21,7 +22,7 @@ function App() {
       <CssBaseline />
       <Header darkMode ={darkMode} hundleThemeChange={hundleThemeChange}  />
       <Container>
-        <Catalog />
+        <Outlet />
       </Container>
     </ThemeProvider>
   );
