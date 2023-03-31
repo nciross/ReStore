@@ -1,7 +1,8 @@
 import { ShoppingCart } from "@mui/icons-material";
 import { AppBar, Badge, Box, IconButton, List, ListItem, Toolbar, Typography } from "@mui/material";
 import Switch from "@mui/material/Switch";
-import { NavLink } from "react-router-dom";
+import { Link , NavLink } from "react-router-dom";
+import { useStoreContext } from "../context/StoreContext";
 interface IProp {
     darkMode: boolean;
     hundleThemeChange: () => void;
@@ -28,7 +29,9 @@ const navStyles = {
     }
 }
 export default function Header({ darkMode, hundleThemeChange }: IProp) {
-
+    const {basket}  = useStoreContext();
+    const itemCount =  basket?.items.reduce((sum,item)=>sum+item.quantity,0);
+    
     return (
         <AppBar position="static" sx={{ mb: 4 }}>
             <Toolbar sx={{
@@ -55,8 +58,8 @@ export default function Header({ darkMode, hundleThemeChange }: IProp) {
                     </List>
                 </Box>
                 <Box display='flex' alignItems='center'>
-                    <IconButton size='large' color='inherit'>
-                        <Badge badgeContent={4} color='secondary'>
+                    <IconButton size='large' color='inherit'  component={Link} to={'/basket'}>
+                        <Badge badgeContent={itemCount} color='secondary'>
                             <ShoppingCart />
                         </Badge>
                     </IconButton>
