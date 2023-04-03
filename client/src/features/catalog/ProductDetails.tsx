@@ -14,6 +14,8 @@ import { useStoreContext } from "../../app/context/StoreContext";
 import NotFound from "../../app/errors/NotFound";
 import LoadingComponent from "../../app/layout/LoadingComponent";
 import { Product } from "../../app/models/product";
+import { useAppDispatch, useAppSelector } from "../../app/store/configureStore";
+import { removeItem, setBasket } from "../basket/basketSlice";
 
 export default function ProductDetails() {
     const { id } = useParams<{ id: string }>();
@@ -21,7 +23,8 @@ export default function ProductDetails() {
     const [loading, setLoading] = useState(true);
     const [quantity, setQuantity] = useState(1);
     const [submitting, setSubmitting] = useState(false);
-    const { basket, setBasket, removeItem } = useStoreContext();
+    const { basket} = useAppSelector(state=>state.basket);
+    const dispatch = useAppDispatch();
     const item = basket?.items.find(i => i.productId == product?.id);
 
     useEffect(() => {
@@ -45,13 +48,13 @@ export default function ProductDetails() {
         if (!item || item.quantity < quantity) {
             const updatedQuantity = item ? quantity - item.quantity : quantity;
             agent.Basket.addItem(product?.id!, updatedQuantity)
-                .then(basket => setBasket(basket))
+                .then(basket => dispatch(setBasket(basket)))
                 .catch(error => console.log(error))
                 .finally(() => setSubmitting(false))
         } else {
             const updatedQuantity = item.quantity - quantity;
             agent.Basket.removeItem(product?.id!, updatedQuantity)
-                .then(() => removeItem(product?.id!, updatedQuantity))
+                .then(() => dispatch(removeItem({productId:product?.id!, quantity:updatedQuantity})))
                 .catch(error => console.log(error))
                 .finally(() => setSubmitting(false))
         }
@@ -115,4 +118,8 @@ export default function ProductDetails() {
             </Grid>
         </Grid>
     )
+}
+
+function dispatch(arg0: any): any {
+    throw new Error("Function not implemented.");
 }

@@ -3,6 +3,7 @@ import { AppBar, Badge, Box, IconButton, List, ListItem, Toolbar, Typography } f
 import Switch from "@mui/material/Switch";
 import { Link , NavLink } from "react-router-dom";
 import { useStoreContext } from "../context/StoreContext";
+import { useAppSelector } from "../store/configureStore";
 interface IProp {
     darkMode: boolean;
     hundleThemeChange: () => void;
@@ -29,9 +30,8 @@ const navStyles = {
     }
 }
 export default function Header({ darkMode, hundleThemeChange }: IProp) {
-    const {basket}  = useStoreContext();
+    const {basket}  = useAppSelector(state=>state.basket);
     const itemCount =  basket?.items.reduce((sum,item)=>sum+item.quantity,0);
-    
     return (
         <AppBar position="static" sx={{ mb: 4 }}>
             <Toolbar sx={{

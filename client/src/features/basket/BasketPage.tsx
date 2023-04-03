@@ -1,14 +1,16 @@
-import { Add, Delete, Remove, SettingsBackupRestoreTwoTone } from "@mui/icons-material";
+import { Add, Delete, Remove } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 import { Box, Button, Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import agent from "../../app/api/agent";
-import { useStoreContext } from "../../app/context/StoreContext";
+import { useAppDispatch, useAppSelector } from "../../app/store/configureStore";
 import { currencyFormat } from "../../app/util/util";
+import { removeItem, setBasket } from "./basketSlice";
 import BasketSummary from "./BasketSummary";
 export default function BasketPage() {
-    const { basket, setBasket, removeItem } = useStoreContext();
+    const {basket} = useAppSelector(state=>state.basket)
+    const dispatch = useAppDispatch()
     const [status, setStatus] = useState({
         loading: false,
         name: ''
@@ -16,14 +18,17 @@ export default function BasketPage() {
     function hundleAddItem(productId: number, name: string) {
         setStatus({ loading: true, name });
         agent.Basket.addItem(productId)
-            .then(basket => setBasket(basket))
+            .then(basket => {
+                console.log(basket); 
+                dispatch(setBasket(basket))}
+                )
             .catch(error => console.log(error))
             .finally(() => setStatus({ loading: false, name: '' }))
     }
     function hundleRemoveItem(productId: number, quantity = 1, name: string) {
         setStatus({ loading: true, name });
         agent.Basket.removeItem(productId, quantity)
-            .then(() => removeItem(productId, quantity))
+            .then(() => dispatch(removeItem({productId, quantity})))
             .catch(error => console.log(error))
             .finally(() => setStatus({ loading: false, name: '' }))
     }
@@ -54,7 +59,7 @@ export default function BasketPage() {
                                         <span>{item.name}</span>
                                     </Box>
                                 </TableCell>
-                                <TableCell align="right">{(item.price / 100).toFixed(2)}</TableCell>
+                                <TableCell align="right">{currencyFormat(item.price)}</TableCell>
                                 <TableCell align="right">
                                     <LoadingButton loading={status.loading && status.name === 'rem' + item.productId} color='error' onClick={() => hundleRemoveItem(item.productId, 1, 'rem' + item.productId)}>
                                         <Remove />
@@ -88,4 +93,8 @@ export default function BasketPage() {
 
         </>
     );
+}
+
+function dipatch(arg0: any): any {
+    throw new Error("Function not implemented.");
 }
